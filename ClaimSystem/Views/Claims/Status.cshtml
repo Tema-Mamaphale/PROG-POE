@@ -1,0 +1,56 @@
+﻿@model ClaimSystem.Models.Claim
+@using ClaimSystem.Models
+
+@*
+    this view was developed with the assisntace from AI tools
+*@
+
+@{
+    ViewData["Title"] = "Track Claim";
+    int progress = Model.Status switch
+    {
+        ClaimStatus.Draft => 15,
+        ClaimStatus.Submitted => 35,
+        ClaimStatus.PendingReview => 65,
+        ClaimStatus.Approved => 100,
+        ClaimStatus.Rejected => 100,
+        _ => 35
+    };
+    string badge = Model.Status switch
+    {
+        ClaimStatus.Approved => "badge badge-success",
+        ClaimStatus.Rejected => "badge badge-danger",
+        _ => "badge badge-warning"
+    };
+}
+<div class="card p-4">
+    <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="icon-pill"><i class="bi bi-activity"></i></span>
+        <h1 class="h3 brand-serif mb-0">Track Claim</h1>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="d-flex align-items-center gap-2"><i class="bi bi-person text-sage"></i><strong>Lecturer:</strong> <span>@Model.LecturerName</span></div>
+        </div>
+        <div class="col-md-4">
+            <div class="d-flex align-items-center gap-2"><i class="bi bi-calendar3 text-sage"></i><strong>Month:</strong> <span>@Model.Month</span></div>
+        </div>
+        <div class="col-md-4">
+            <div class="d-flex align-items-center gap-2"><i class="bi bi-info-circle text-sage"></i><strong>Status:</strong> <span class="@badge">@Model.Status</span></div>
+        </div>
+    </div>
+
+   
+    <div class="stepper my-3">
+        <div class="step @(Model.Status>=ClaimStatus.Submitted ? "active" : "")"><span class="dot">1</span> Submitted</div>
+        <div class="step @(Model.Status>=ClaimStatus.PendingReview ? "active" : "")"><span class="dot">2</span> Under Review</div>
+        <div class="step @(Model.Status==ClaimStatus.Approved || Model.Status==ClaimStatus.Rejected ? "active" : "")"><span class="dot">3</span> Decision</div>
+    </div>
+
+    <div class="progress mb-3" role="progressbar" aria-valuenow="@progress" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-bar" style="width:@progress%">@progress%</div>
+    </div>
+
+    <a class="btn btn-ghost" asp-action="Submit"><i class="bi bi-arrow-left me-1"></i> Back to Submit</a>
+</div>
